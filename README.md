@@ -16,4 +16,16 @@ docker compose up -d --build
 
 Run without Airflow: `docker compose run --rm app python -m src.pipeline`
 
+## Step-by-step commands
+```bash
+python -m src.extraction.extract          # Step 1: download raw data from TMDB
+python -m src.extraction.inspect_raw      # quick check of the raw data
+
+python -m src.cleaning.clean              # Step 2: analyze + clean -> data/processed/movies_clean.pkl
+python -m src.database.mongo              # Step 2: load the cleaned data into MongoDB
+python -m src.database.queries            # Step 2: run example queries + aggregations
+
+pytest -q                                 # run all tests (fake API + fake MongoDB, no internet needed)
+```
+
 Local dev: `python -m venv .venv && pip install -r requirements.txt` (set `MONGO_URI=mongodb://localhost:27017`).

@@ -1,4 +1,3 @@
-"""Run the full pipeline without Airflow: python -m src.pipeline"""
 import logging
 
 from src.cleaning.clean import run_cleaning
@@ -10,7 +9,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 def run_ml():
-    """TODO: TF-IDF, classification (+GridSearch), clustering, save everything with joblib."""
+    pass
 
 
 if __name__ == "__main__":

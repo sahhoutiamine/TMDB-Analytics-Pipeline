@@ -1,11 +1,3 @@
-"""
-Quick check of the downloaded data.
-Run it with:   python -m src.extraction.inspect_raw
-
-(The deeper analysis - types, missing values, duplicates, inconsistencies -
-lives in src/cleaning/clean.py, which is Step 2. This script is just a fast
-"did the extraction work?" check for Step 1.)
-"""
 import json
 
 import pandas as pd

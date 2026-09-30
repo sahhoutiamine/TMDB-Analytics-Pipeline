@@ -27,7 +27,6 @@ x-airflow-common: &airflow-common
       condition: service_started
 
 services:
-  # ---------- Databases ----------
   mongo:
     image: mongo:7
     container_name: movies_mongo
@@ -64,9 +63,8 @@ services:
       interval: 10s
       retries: 5
 
-  # ---------- Python (run any script / notebook / test here) ----------
   python:
-    build: . # same image as "app" (same requirements.txt)
+    build: .
     container_name: movies_python
     env_file: .env
     environment:
@@ -81,11 +79,8 @@ services:
       - ./app:/app/app
       - ./tests:/app/tests
       - ./notebooks:/app/notebooks
-    # Overrides the Dockerfile's CMD (which starts Streamlit): this container
-    # just sleeps forever, so it stays up and ready for "docker compose run/exec".
     command: ["sleep", "infinity"]
 
-  # ---------- Streamlit app ----------
   app:
     build: .
     container_name: movies_streamlit
@@ -101,10 +96,9 @@ services:
       - ./data:/app/data
       - ./models:/app/models
       - ./reports:/app/reports
-      - ./src:/app/src # live reload during development
+      - ./src:/app/src
       - ./app:/app/app
 
-  # ---------- Airflow ----------
   airflow-init:
     <<: *airflow-common
     container_name: airflow_init

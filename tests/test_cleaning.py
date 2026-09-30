@@ -6,7 +6,6 @@ from src.cleaning import clean
 
 
 def make_raw_df():
-    """A tiny fake dataset with every kind of problem we want to catch."""
     return pd.DataFrame([
         {"movie_id": 1, "title": "Movie A", "overview": "A story", "release_date": "2010-05-01",
          "runtime": 100, "original_language": "en", "genres": ["Drama"], "keywords": ["love"],
@@ -14,12 +13,12 @@ def make_raw_df():
         {"movie_id": 2, "title": "Movie B", "overview": None, "release_date": "2015-01-10",
          "runtime": 0, "original_language": "fr", "genres": ["Comedy"], "keywords": [],
          "budget": 0, "revenue": 0, "popularity": 3.0, "vote_average": 6.0, "vote_count": 50},
-        {"movie_id": 2, "title": "Movie B", "overview": None, "release_date": "2015-01-10",  # duplicate id
+        {"movie_id": 2, "title": "Movie B", "overview": None, "release_date": "2015-01-10",
          "runtime": 0, "original_language": "fr", "genres": ["Comedy"], "keywords": [],
          "budget": 0, "revenue": 0, "popularity": 3.0, "vote_average": 6.0, "vote_count": 50},
         {"movie_id": 3, "title": "", "overview": "No title here", "release_date": "not-a-date",
          "runtime": 90, "original_language": "en", "genres": [], "keywords": [],
-         "budget": 500, "revenue": 500, "popularity": 1.0, "vote_average": 15.0, "vote_count": 1},  # bad rating
+         "budget": 500, "revenue": 500, "popularity": 1.0, "vote_average": 15.0, "vote_count": 1},
     ])
 
 
@@ -33,7 +32,6 @@ def test_read_one_movie_extracts_expected_fields():
 
 
 def test_read_one_movie_handles_missing_fields():
-    # A movie with no genres/keywords at all should not crash
     row = clean.read_one_movie({"id": 1, "title": "X"})
     assert row["genres"] == [] and row["keywords"] == []
 
@@ -41,30 +39,29 @@ def test_read_one_movie_handles_missing_fields():
 def test_report_duplicates_counts_movie_id():
     df = make_raw_df()
     report = clean.report_duplicates(df)
-    assert report["duplicate_movie_id"] == 1  # movie_id=2 appears twice
+    assert report["duplicate_movie_id"] == 1
 
 
 def test_drop_duplicates_removes_repeated_id():
     df = make_raw_df()
     out = clean.drop_duplicates(df)
     assert out["movie_id"].duplicated().sum() == 0
-    assert len(out) == 3  # one of the two "Movie B" rows is removed
+    assert len(out) == 3
 
 
 def test_detect_inconsistencies_finds_the_planted_problems():
     df = make_raw_df()
     report = clean.detect_inconsistencies(df)
-    assert report["budget_zero"] == 2          # both "Movie B" rows
+    assert report["budget_zero"] == 2
     assert report["runtime_zero_or_null"] == 2
-    assert report["overview_empty"] == 2       # both "Movie B" rows have overview=None
-    assert report["vote_average_out_of_range"] == 1  # the 15.0 rating
-    assert report["release_date_missing_or_invalid"] == 1  # "not-a-date"
+    assert report["overview_empty"] == 2
+    assert report["vote_average_out_of_range"] == 1
+    assert report["release_date_missing_or_invalid"] == 1
 
 
 def test_fix_inconsistencies_turns_zero_into_nan():
     df = make_raw_df()
     out = clean.fix_inconsistencies(df)
-    # budget/revenue/runtime of 0 become NaN, not 0
     zero_budget_rows = out[out["movie_id"] == 2]
     assert zero_budget_rows["budget"].isna().all()
     assert zero_budget_rows["runtime"].isna().all()
@@ -74,14 +71,13 @@ def test_fix_inconsistencies_removes_bad_rating_range():
     df = make_raw_df()
     out = clean.fix_inconsistencies(df)
     row3 = out[out["movie_id"] == 3]
-    # movie 3 had vote_average = 15 (impossible) -> should become NaN, not stay 15
     assert row3.empty or row3["vote_average"].isna().all()
 
 
 def test_fix_inconsistencies_drops_rows_without_title():
     df = make_raw_df()
     out = clean.fix_inconsistencies(df)
-    assert 3 not in out["movie_id"].values  # movie 3 has an empty title
+    assert 3 not in out["movie_id"].values
 
 
 def test_convert_dates_creates_datetime_and_handles_bad_dates():
@@ -89,7 +85,7 @@ def test_convert_dates_creates_datetime_and_handles_bad_dates():
     out = clean.convert_dates(df)
     assert pd.api.types.is_datetime64_any_dtype(out["release_date"])
     bad_row = out[out["movie_id"] == 3]
-    assert bad_row["release_date"].isna().all()  # "not-a-date" -> NaT, no crash
+    assert bad_row["release_date"].isna().all()
 
 
 def test_split_columns_groups_are_correct():
@@ -105,7 +101,6 @@ def test_split_columns_groups_are_correct():
 def test_clean_end_to_end_runs_without_error():
     df = make_raw_df()
     out = clean.clean(df)
-    # no crash, no duplicate ids, no NaN left in overview (filled with "")
     assert out["movie_id"].duplicated().sum() == 0
     assert out["overview"].isna().sum() == 0
     assert pd.api.types.is_datetime64_any_dtype(out["release_date"])

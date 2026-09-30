@@ -1,4 +1,3 @@
-"""Step 3: EDA plots. Each function saves a figure in reports/figures/."""
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -15,5 +14,3 @@ def plot_rating_distribution(df: pd.DataFrame):
     fig.savefig(FIGURES_DIR / "rating_distribution.png", bbox_inches="tight")
     return fig
 
-# TODO: popularity, genres, releases per year, runtime, budget vs revenue,
-#       votes vs popularity, boxplots, correlation heatmap (+ short interpretation for each)

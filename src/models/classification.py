@@ -1,4 +1,3 @@
-"""Step 6-7: classification, cross-validation, GridSearchCV."""
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
@@ -11,7 +10,6 @@ from src.config import RANDOM_STATE
 
 NUM = ["runtime", "budget", "year", "month", "n_genres", "n_keywords", "overview_len"]
 CAT = ["original_language", "runtime_cat"]
-# WARNING: vote_count creates the target -> never a feature. Popularity / vote_average: check leakage!
 
 
 def make_target(df: pd.DataFrame, quantile: float = 0.75) -> pd.Series:
@@ -28,5 +26,3 @@ def build_models() -> dict[str, Pipeline]:
         "svm": Pipeline([("pre", pre), ("clf", LinearSVC(random_state=RANDOM_STATE))]),
     }
 
-# TODO: train/test split (stratified), StratifiedKFold + cross_validate,
-#       metrics (acc, precision, recall, F1, ROC-AUC, confusion matrix), GridSearchCV, joblib.dump

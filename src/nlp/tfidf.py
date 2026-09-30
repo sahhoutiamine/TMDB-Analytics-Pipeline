@@ -1,4 +1,3 @@
-"""Step 5: text cleaning + TF-IDF."""
 import re
 
 import pandas as pd
@@ -17,4 +16,3 @@ def build_tfidf(texts: pd.Series, max_features: int = 5000, ngram_range=(1, 2)):
     X = vec.fit_transform(texts.fillna("").map(clean_text))
     return vec, X
 
-# TODO: experiment on max_features / ngram_range, top terms per cluster/class

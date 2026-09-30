@@ -1,4 +1,3 @@
-"""Step 8: K-Means + silhouette + TruncatedSVD 2D projection."""
 from sklearn.cluster import KMeans
 from sklearn.decomposition import TruncatedSVD
 from sklearn.metrics import silhouette_score
@@ -17,4 +16,3 @@ def best_k(X, k_range=range(2, 11)):
 def project_2d(X):
     return TruncatedSVD(n_components=2, random_state=RANDOM_STATE).fit_transform(X)
 
-# TODO: interpret clusters (mean of features, top TF-IDF terms), save KMeans with joblib

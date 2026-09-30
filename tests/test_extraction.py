@@ -9,7 +9,6 @@ from src.extraction.tmdb_client import TMDBClient
 
 
 class FakeResponse:
-    """A fake `requests` response so tests never touch the real API."""
     def __init__(self, status=200, data=None, headers=None):
         self.status_code = status
         self._data = data
@@ -22,7 +21,6 @@ class FakeResponse:
 
 
 class FakeSession:
-    """Returns the prepared responses one by one."""
     def __init__(self, responses):
         self.responses = list(responses)
         self.calls = 0
@@ -98,8 +96,8 @@ def test_gives_up_after_max_retries():
 def test_pagination_stops_on_empty_page(tmp_path):
     pages = [
         FakeResponse(200, {"results": [{"id": 1}, {"id": 2}]}),
-        FakeResponse(200, {"results": [{"id": 2}, {"id": 3}]}),  # id 2 is a duplicate
-        FakeResponse(200, {"results": []}),                       # empty page -> stop
+        FakeResponse(200, {"results": [{"id": 2}, {"id": 3}]}),
+        FakeResponse(200, {"results": []}),
     ]
     client = make_client(pages)
     with patch.object(extract, "IDS_FILE", tmp_path / "ids.json"):
@@ -115,7 +113,6 @@ def test_download_saves_one_file_and_skips_existing(tmp_path):
         assert stats == {"downloaded": 1, "skipped": 0, "failed": 1}
         assert json.loads(raw_file.read_text())[0]["title"] == "A"
 
-        # second run: movie 1 is already in the file -> no API call for it
         client2 = make_client([FakeResponse(404, {})])
         stats2 = extract.download_movies(client2, [1, 2], extract.load_saved_movies())
         assert stats2["skipped"] == 1 and client2.session.calls == 1

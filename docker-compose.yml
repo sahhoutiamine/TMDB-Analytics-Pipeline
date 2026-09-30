@@ -64,6 +64,27 @@ services:
       interval: 10s
       retries: 5
 
+  # ---------- Python (run any script / notebook / test here) ----------
+  python:
+    build: . # same image as "app" (same requirements.txt)
+    container_name: movies_python
+    env_file: .env
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+    depends_on:
+      - mongo
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./reports:/app/reports
+      - ./src:/app/src
+      - ./app:/app/app
+      - ./tests:/app/tests
+      - ./notebooks:/app/notebooks
+    # Overrides the Dockerfile's CMD (which starts Streamlit): this container
+    # just sleeps forever, so it stays up and ready for "docker compose run/exec".
+    command: ["sleep", "infinity"]
+
   # ---------- Streamlit app ----------
   app:
     build: .
@@ -80,7 +101,7 @@ services:
       - ./data:/app/data
       - ./models:/app/models
       - ./reports:/app/reports
-      - ./src:/app/src        # live reload during development
+      - ./src:/app/src # live reload during development
       - ./app:/app/app
 
   # ---------- Airflow ----------

@@ -27,3 +27,4 @@ streamlit==1.38.0
 # Dev
 pytest==8.3.3
 jupyter==1.1.1
+mongomock==4.2.0.post1   # fake MongoDB, used only in tests

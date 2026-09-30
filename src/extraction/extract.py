@@ -17,11 +17,14 @@ from src.extraction.tmdb_client import TMDBClient
 
 logger = logging.getLogger(__name__)
 
-MAX_PAGES = 500                          
-IDS_FILE = DATA_RAW / "movie_ids.json"   
+MAX_PAGES = 500                          # TMDB does not give more than 500 pages
+IDS_FILE = DATA_RAW / "movie_ids.json"   # cache of the list of IDs (saves ~100 API calls)
 RAW_FILE = RAW_MOVIES_FILE
 
 
+# --------------------------------------------------------------------------
+# Reading / writing the single JSON file
+# --------------------------------------------------------------------------
 def load_saved_movies():
     """Read movies_raw.json and return a dict {movie_id: movie_data}."""
     if not RAW_FILE.exists():
@@ -43,7 +46,9 @@ def save_movies(movies):
     tmp_file.replace(RAW_FILE)
 
 
-
+# --------------------------------------------------------------------------
+# A) Movie IDs
+# --------------------------------------------------------------------------
 def get_movie_ids(client, n_movies, force=False):
     """Return a list of `n_movies` movie IDs (uses a local cache if possible)."""
     if IDS_FILE.exists() and not force:
@@ -57,12 +62,12 @@ def get_movie_ids(client, n_movies, force=False):
     while len(ids) < n_movies and page <= MAX_PAGES:
         movies = client.discover_movies(page)
 
-        if not movies:  
+        if not movies:  # empty page -> no more results, stop
             logger.info("Page %s is empty: stopping pagination", page)
             break
 
         for movie in movies:
-            if movie["id"] not in ids: 
+            if movie["id"] not in ids:  # avoid duplicates
                 ids.append(movie["id"])
 
         logger.info("Page %s done -> %s ids collected", page, len(ids))
@@ -73,7 +78,9 @@ def get_movie_ids(client, n_movies, force=False):
     return ids
 
 
-
+# --------------------------------------------------------------------------
+# B) Movie details
+# --------------------------------------------------------------------------
 def download_movies(client, ids, movies, force=False):
     """
     Download the details of each movie and add them to the `movies` dict.

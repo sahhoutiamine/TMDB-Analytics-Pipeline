@@ -87,7 +87,7 @@ def run_tfidf():
           f"ngram_range={FINAL_CONFIG['ngram_range']}. Bigrams capture short "
           f"phrases (e.g. 'based on') that single words lose, while "
           f"max_features=5000 keeps the matrix small enough to work with "
-          f"quickly in clustering and recommendation.")
+          f"quickly in clustering")
 
     vectorizer, matrix = build_tfidf(texts, **FINAL_CONFIG)
     print(f"-> Final matrix: {matrix.shape[0]} movies x {matrix.shape[1]} terms")

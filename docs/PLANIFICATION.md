@@ -1,0 +1,1 @@
+https://midoriaduko.atlassian.net/jira/software/projects/SCRUM/boards/1?filter=&groupBy=none&atlOrigin=eyJpIjoiY2JjOWQzY2QxMTU1NGM2NWE0NTgwN2RiM2ZlZDJjOTUiLCJwIjoiaiJ9
